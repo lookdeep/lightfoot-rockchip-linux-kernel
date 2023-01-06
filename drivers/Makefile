@@ -194,3 +194,4 @@ obj-$(CONFIG_RK_HEADSET)	+= headset_observe/
 obj-$(CONFIG_RK_NAND)		+= rk_nand/
 obj-$(CONFIG_ROCKCHIP_RKNPU)	+= rknpu/
 obj-$(CONFIG_ARCH_ROCKCHIP)	+= ks-t1/
+obj-$(CONFIG_ARCH_ROCKCHIP)	+= switch/
