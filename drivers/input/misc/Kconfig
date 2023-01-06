@@ -929,4 +929,15 @@ config INPUT_STPMIC1_ONKEY
 	  To compile this driver as a module, choose M here: the
 	  module will be called stpmic1_onkey.
 
+config INPUT_ADC_PHOTORESISTOR
+	tristate "KS-T1 ADC photoresistor driver"
+	depends on ARCH_ROCKCHIP
+	default m
+	help
+	  Say M to enable support for the KS-T1 ADC photoresistor.
+
+	  This driver cannot be used as a built-in driver as it does not wait
+	  for the ADC channel to be ready at boot time. The module will be
+	  called adc-photoresistor.
+
 endif
