@@ -27,8 +27,6 @@
  * 1. fix set_fmt & ioctl get mode unmatched issue.
  * 2. need to set default vblank when change format.
  * 3. enum all supported mode mbus_code, not just cur_mode.
- * V0.0X01.0X08
- * 1. add dcphy param for hdrx2 mode.
  */
 
 #define DEBUG
@@ -254,17 +252,6 @@ struct imx415 {
 	bool			is_tline_init;
 };
 
-static struct rkmodule_csi_dphy_param dcphy_param = {
-	.vendor = PHY_VENDOR_SAMSUNG,
-	.lp_vol_ref = 6,
-	.lp_hys_sw = {3, 0, 0, 0},
-	.lp_escclk_pol_sel = {1, 1, 1, 1},
-	.skew_data_cal_clk = {0, 3, 3, 3},
-	.clk_hs_term_sel = 2,
-	.data_hs_term_sel = {2, 2, 2, 2},
-	.reserved = {0},
-};
-
 #define to_imx415(sd) container_of(sd, struct imx415, subdev)
 
 /*
@@ -275,6 +262,7 @@ static __maybe_unused const struct regval imx415_global_12bit_3864x2192_regs[] =
 	{0x3008, 0x7F},
 	{0x300A, 0x5B},
 	{0x30C1, 0x00},
+	{0x3030, 0x03},
 	{0x3031, 0x01},
 	{0x3032, 0x01},
 	{0x30D9, 0x06},
@@ -368,6 +356,7 @@ static __maybe_unused const struct regval imx415_linear_12bit_3864x2192_891M_reg
 	{0x3029, 0x04},
 	{0x302C, 0x00},
 	{0x302D, 0x00},
+	{0x3030, 0x03},
 	{0x3033, 0x05},
 	{0x3050, 0x08},
 	{0x3051, 0x00},
@@ -402,6 +391,7 @@ static __maybe_unused const struct regval imx415_hdr2_12bit_3864x2192_1782M_regs
 	{0x3029, 0x02},
 	{0x302C, 0x01},
 	{0x302D, 0x01},
+	{0x3030, 0x03},
 	{0x3033, 0x04},
 	{0x3050, 0x90},
 	{0x3051, 0x0D},
@@ -436,6 +426,7 @@ static __maybe_unused const struct regval imx415_hdr3_12bit_3864x2192_1782M_regs
 	{0x3029, 0x02},
 	{0x302C, 0x01},
 	{0x302D, 0x02},
+	{0x3030, 0x03},
 	{0x3033, 0x04},
 	{0x3050, 0x14},
 	{0x3051, 0x01},
@@ -472,6 +463,7 @@ static __maybe_unused const struct regval imx415_global_10bit_3864x2192_regs[] =
 	{0x311E, 0x24},
 	{0x32D4, 0x21},
 	{0x32EC, 0xA1},
+	{0x3030, 0x03},
 	{0x3452, 0x7F},
 	{0x3453, 0x03},
 	{0x358A, 0x04},
@@ -557,6 +549,7 @@ static __maybe_unused const struct regval imx415_hdr3_10bit_3864x2192_1485M_regs
 	{0x3029, 0x02},
 	{0x302C, 0x01},
 	{0x302D, 0x02},
+	{0x3030, 0x03},
 	{0x3033, 0x08},
 	{0x3050, 0x90},
 	{0x3051, 0x15},
@@ -592,6 +585,7 @@ static __maybe_unused const struct regval imx415_hdr3_10bit_3864x2192_1782M_regs
 	{0x3029, 0x01},
 	{0x302C, 0x01},
 	{0x302D, 0x02},
+	{0x3030, 0x03},
 	{0x3033, 0x04},
 	{0x3050, 0x3E},
 	{0x3051, 0x01},
@@ -627,6 +621,7 @@ static __maybe_unused const struct regval imx415_hdr2_10bit_3864x2192_1485M_regs
 	{0x3029, 0x02},
 	{0x302C, 0x01},
 	{0x302D, 0x01},
+	{0x3030, 0x03},
 	{0x3033, 0x08},
 	{0x3050, 0xA8},
 	{0x3051, 0x0D},
@@ -662,6 +657,7 @@ static __maybe_unused const struct regval imx415_linear_10bit_3864x2192_891M_reg
 	{0x3029, 0x04},
 	{0x302C, 0x00},
 	{0x302D, 0x00},
+	{0x3030, 0x03},
 	{0x3033, 0x05},
 	{0x3050, 0x08},
 	{0x3051, 0x00},
@@ -697,6 +693,7 @@ static __maybe_unused const struct regval imx415_linear_12bit_1932x1096_594M_reg
 	{0x3029, 0x03},
 	{0x302C, 0x00},
 	{0x302D, 0x00},
+	{0x3030, 0x03},
 	{0x3031, 0x00},
 	{0x3033, 0x07},
 	{0x3050, 0x08},
@@ -736,6 +733,7 @@ static __maybe_unused const struct regval imx415_hdr2_12bit_1932x1096_891M_regs[
 	{0x3029, 0x02},
 	{0x302C, 0x01},
 	{0x302D, 0x01},
+	{0x3030, 0x03},
 	{0x3031, 0x00},
 	{0x3033, 0x05},
 	{0x3050, 0xB8},
@@ -2182,7 +2180,6 @@ static long imx415_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 	long ret = 0;
 	const struct imx415_mode *mode;
 	u64 pixel_rate = 0;
-	struct rkmodule_csi_dphy_param *dphy_param;
 	u8 lanes = imx415->bus_cfg.bus.mipi_csi2.num_data_lanes;
 	struct rkmodule_exp_delay *exp_delay;
 	struct rkmodule_exp_info *exp_info;
@@ -2270,15 +2267,6 @@ static long imx415_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 		ch_info = (struct rkmodule_channel_info *)arg;
 		ret = imx415_get_channel_info(imx415, ch_info);
 		break;
-	case RKMODULE_GET_CSI_DPHY_PARAM:
-		if (imx415->cur_mode->hdr_mode == HDR_X2) {
-			dphy_param = (struct rkmodule_csi_dphy_param *)arg;
-			*dphy_param = dcphy_param;
-			dev_info(&imx415->client->dev,
-				 "get sensor dphy param\n");
-		} else
-			ret = -EINVAL;
-		break;
 	case RKMODULE_GET_EXP_DELAY:
 		exp_delay = (struct rkmodule_exp_delay *)arg;
 		exp_delay->exp_delay = 2;
@@ -2324,7 +2312,6 @@ static long imx415_compat_ioctl32(struct v4l2_subdev *sd,
 	long ret;
 	u32  stream;
 	u32 brl = 0;
-	struct rkmodule_csi_dphy_param *dphy_param;
 	struct rkmodule_exp_delay *exp_delay;
 	struct rkmodule_exp_info *exp_info;
 
@@ -2429,21 +2416,6 @@ static long imx415_compat_ioctl32(struct v4l2_subdev *sd,
 				ret = -EFAULT;
 		}
 		kfree(ch_info);
-		break;
-	case RKMODULE_GET_CSI_DPHY_PARAM:
-		dphy_param = kzalloc(sizeof(*dphy_param), GFP_KERNEL);
-		if (!dphy_param) {
-			ret = -ENOMEM;
-			return ret;
-		}
-
-		ret = imx415_ioctl(sd, cmd, dphy_param);
-		if (!ret) {
-			ret = copy_to_user(up, dphy_param, sizeof(*dphy_param));
-			if (ret)
-				ret = -EFAULT;
-		}
-		kfree(dphy_param);
 		break;
 	case RKMODULE_GET_EXP_DELAY:
 		exp_delay = kzalloc(sizeof(*exp_delay), GFP_KERNEL);
@@ -2621,6 +2593,10 @@ int __imx415_power_on(struct imx415 *imx415)
 		if (!IS_ERR(imx415->reset_gpio))
 			gpiod_direction_output(imx415->reset_gpio, 0);
 
+		usleep_range(10 * 1000, 20 * 1000);
+		if (!IS_ERR(imx415->reset_gpio))
+			gpiod_direction_output(imx415->reset_gpio, 1);
+
 		/* At least 1us between XCLR and clk */
 		/* fix power on timing if insmod this ko */
 		usleep_range(10 * 1000, 20 * 1000);
@@ -2666,6 +2642,8 @@ err_clk:
 
 static void __imx415_power_off(struct imx415 *imx415)
 {
+
+#if 1
 	int ret;
 	struct device *dev = &imx415->client->dev;
 
@@ -2680,7 +2658,7 @@ static void __imx415_power_off(struct imx415 *imx415)
 
 	if (!IS_ERR(imx415->reset_gpio))
 		gpiod_direction_output(imx415->reset_gpio, 1);
-	clk_disable_unprepare(imx415->xvclk);
+	//clk_disable_unprepare(imx415->xvclk);
 	if (!IS_ERR_OR_NULL(imx415->pins_sleep)) {
 		ret = pinctrl_select_state(imx415->pinctrl,
 					   imx415->pins_sleep);
@@ -2690,6 +2668,7 @@ static void __imx415_power_off(struct imx415 *imx415)
 	if (!IS_ERR(imx415->power_gpio))
 		gpiod_direction_output(imx415->power_gpio, 0);
 	regulator_bulk_disable(IMX415_NUM_SUPPLIES, imx415->supplies);
+#endif
 }
 
 #if IS_REACHABLE(CONFIG_VIDEO_CAM_SLEEP_WAKEUP)
@@ -2748,11 +2727,11 @@ static int __maybe_unused imx415_runtime_resume(struct device *dev)
 
 static int __maybe_unused imx415_runtime_suspend(struct device *dev)
 {
-	struct i2c_client *client = to_i2c_client(dev);
-	struct v4l2_subdev *sd = i2c_get_clientdata(client);
-	struct imx415 *imx415 = to_imx415(sd);
+	// struct i2c_client *client = to_i2c_client(dev);
+	// struct v4l2_subdev *sd = i2c_get_clientdata(client);
+	// struct imx415 *imx415 = to_imx415(sd);
 
-	__imx415_power_off(imx415);
+	// __imx415_power_off(imx415);
 
 	return 0;
 }
@@ -3015,9 +2994,9 @@ static int imx415_set_ctrl(struct v4l2_ctrl *ctrl)
 		if (ret)
 			break;
 		if (ctrl->val)
-			val |= IMX415_MIRROR_BIT_MASK;
-		else
 			val &= ~IMX415_MIRROR_BIT_MASK;
+		else
+			val |= IMX415_MIRROR_BIT_MASK;
 		ret = imx415_write_reg(imx415->client, IMX415_FLIP_REG,
 				       IMX415_REG_VALUE_08BIT, val);
 		break;
@@ -3027,9 +3006,9 @@ static int imx415_set_ctrl(struct v4l2_ctrl *ctrl)
 		if (ret)
 			break;
 		if (ctrl->val)
-			val |= IMX415_FLIP_BIT_MASK;
+			val &= ~IMX415_FLIP_BIT_MASK;   // 解决双目医疗项目sensor翻转问题
 		else
-			val &= ~IMX415_FLIP_BIT_MASK;
+			val |= IMX415_FLIP_BIT_MASK;
 		ret = imx415_write_reg(imx415->client, IMX415_FLIP_REG,
 				       IMX415_REG_VALUE_08BIT, val);
 		break;
