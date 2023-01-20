@@ -1720,12 +1720,14 @@ static void link_and_create_debugfs(struct regulator *regulator, struct regulato
 		regulator->dev = dev;
 
 		/* Add a link to the device sysfs entry */
-		err = sysfs_create_link_nowarn(&rdev->dev.kobj, &dev->kobj,
-					       regulator->supply_name);
-		if (err) {
-			rdev_dbg(rdev, "could not add device link %s: %pe\n",
-				 dev->kobj.name, ERR_PTR(err));
-			/* non-fatal */
+		if (device_is_registered(dev)) {
+			err = sysfs_create_link_nowarn(&rdev->dev.kobj, &dev->kobj,
+						       regulator->supply_name);
+			if (err) {
+				rdev_dbg(rdev, "could not add device link %s: %pe\n",
+					 dev->kobj.name, ERR_PTR(err));
+				/* non-fatal */
+			}
 		}
 	}
 
