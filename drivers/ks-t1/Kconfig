@@ -1,10 +1,10 @@
 menu "KS-T1 drivers"
 
 config ALSA_UPCM
-	bool "ALSA UPCM driver"
+	tristate "ALSA UPCM driver"
 	depends on ARCH_ROCKCHIP
 	select SWITCH
-	default y
+	default m
 	help
 	  Build the upcm driver for the KS-T1 board
 
