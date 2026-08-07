@@ -407,15 +407,33 @@ static int rtl8211f_config_init(struct phy_device *phydev)
 	}
 
 	if (priv->has_phycr2) {
-		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
-				       RTL8211F_CLKOUT_EN, priv->phycr2);
+		ret = phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR2,
+					       RTL8211F_CLKOUT_EN, priv->phycr2);
 		if (ret < 0) {
 			dev_err(dev, "clkout configuration failed: %pe\n",
 				ERR_PTR(ret));
 			return ret;
 		}
 
-		return genphy_soft_reset(phydev);
+		if (ret) {
+			/* PHYCR2 changes only take effect after a soft reset.
+			 * But config_init runs from phy_init_hw() BEFORE
+			 * phy_resume(), so on re-attach the PHY is still in
+			 * the BMCR power-down that genphy_suspend() set at
+			 * detach; the RTL8211F cannot complete a BMCR soft
+			 * reset in that state and phy_poll_reset() times out
+			 * (-ETIMEDOUT) on every warm re-attach.  Wake the PHY
+			 * first, and only reset when PHYCR2 actually changed
+			 * (5.10 never soft-resets here at all).
+			 */
+			if (phydev->suspended) {
+				ret = genphy_resume(phydev);
+				if (ret < 0)
+					return ret;
+				msleep(20);
+			}
+			return genphy_soft_reset(phydev);
+		}
 	}
 
 	return 0;
