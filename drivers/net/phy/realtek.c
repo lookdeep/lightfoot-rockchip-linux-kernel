@@ -415,23 +415,25 @@ static int rtl8211f_config_init(struct phy_device *phydev)
 			return ret;
 		}
 
+		/* Cold attach: always soft-reset (stock behavior — the
+		 * reset also (re)starts the PHY clocking the MAC needs;
+		 * without it stmmac_hw_setup fails DMA init on this board).
+		 * Warm re-attach: config_init runs from phy_init_hw()
+		 * BEFORE phy_resume(), so the PHY is still in the BMCR
+		 * power-down genphy_suspend() set at detach; the RTL8211F
+		 * cannot complete a BMCR soft reset in that state and
+		 * phy_poll_reset() times out (-ETIMEDOUT) on every reopen.
+		 * There, reset only if PHYCR2 actually changed, waking the
+		 * PHY first (5.10 never soft-resets at attach at all).
+		 */
+		if (!phydev->suspended)
+			return genphy_soft_reset(phydev);
+
 		if (ret) {
-			/* PHYCR2 changes only take effect after a soft reset.
-			 * But config_init runs from phy_init_hw() BEFORE
-			 * phy_resume(), so on re-attach the PHY is still in
-			 * the BMCR power-down that genphy_suspend() set at
-			 * detach; the RTL8211F cannot complete a BMCR soft
-			 * reset in that state and phy_poll_reset() times out
-			 * (-ETIMEDOUT) on every warm re-attach.  Wake the PHY
-			 * first, and only reset when PHYCR2 actually changed
-			 * (5.10 never soft-resets here at all).
-			 */
-			if (phydev->suspended) {
-				ret = genphy_resume(phydev);
-				if (ret < 0)
-					return ret;
-				msleep(20);
-			}
+			ret = genphy_resume(phydev);
+			if (ret < 0)
+				return ret;
+			msleep(20);
 			return genphy_soft_reset(phydev);
 		}
 	}
