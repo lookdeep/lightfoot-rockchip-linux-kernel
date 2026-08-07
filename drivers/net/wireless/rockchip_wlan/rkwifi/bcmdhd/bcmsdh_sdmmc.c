@@ -84,7 +84,9 @@ static void IRQHandlerF2(struct sdio_func *func);
 static int sdioh_sdmmc_get_cisaddr(sdioh_info_t *sd, uint32 regaddr);
 #if defined(ENABLE_INSMOD_NO_FW_LOAD) && !defined(BUS_POWER_RESTORE)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0) && defined(MMC_SW_RESET)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0)
 extern int mmc_sw_reset(struct mmc_host *host);
+#endif /* declared (with struct mmc_card arg) in linux/mmc/core.h on 6.1 */
 #else
 extern int sdio_reset_comm(struct mmc_card *card);
 #endif
@@ -1757,7 +1759,11 @@ static int sdio_sw_reset(sdioh_info_t *sd)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0) && defined(MMC_SW_RESET)
 	printf("%s: Enter\n", __FUNCTION__);
 	sdio_claim_host(sd->func[0]);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
+	err = mmc_sw_reset(host->card);
+#else
 	err = mmc_sw_reset(host);
+#endif
 	sdio_release_host(sd->func[0]);
 #else
 	err = sdio_reset_comm(sd->func[0]->card);

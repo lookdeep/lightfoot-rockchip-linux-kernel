@@ -17065,7 +17065,7 @@ dhd_register_if(dhd_pub_t *dhdp, int ifidx, bool need_rtnl_lock)
 		wl_ext_iapsta_update_net_device(net, ifidx);
 #endif /* WL_EXT_IAPSTA */
 		if (dhd->pub.up == 1) {
-			if (_dhd_set_mac_address(dhd, ifidx, net->dev_addr, FALSE) == 0)
+			if (_dhd_set_mac_address(dhd, ifidx, (uint8 *)net->dev_addr, FALSE) == 0)
 				DHD_INFO(("%s: MACID is overwritten\n", __FUNCTION__));
 			else
 				DHD_ERROR(("%s: _dhd_set_mac_address() failed\n", __FUNCTION__));

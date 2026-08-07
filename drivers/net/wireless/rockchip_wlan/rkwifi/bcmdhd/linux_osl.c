@@ -1858,7 +1858,7 @@ osl_timer_init(osl_t *osh, const char *name, void (*fn)(void *arg), void *arg)
 	}
 #endif
 
-	init_timer_compat(t->timer, (linux_timer_fn)fn, arg);
+	init_timer_compat(t->timer, (linux_timer_fn)(void (*)(void))fn, arg);
 
 	return (t);
 }
