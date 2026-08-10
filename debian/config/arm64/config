@@ -7489,3 +7489,8 @@ CONFIG_WERROR=y
 # Rockchip Minidump drivers
 # Rockchip SoC drivers
 # Rockchip video tunnel support
+
+## KS_T1 board drivers: pin explicitly (built today only via Kconfig "default m";
+## an upstream default change would silently drop them)
+CONFIG_ALSA_UPCM=m
+CONFIG_INPUT_ADC_PHOTORESISTOR=m
