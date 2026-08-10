@@ -52,6 +52,10 @@ bifrost_kbase-y += csf/mali_kbase_csf_fw_io_no_mali.o
 else
 bifrost_kbase-y += csf/mali_kbase_csf_firmware.o
 bifrost_kbase-y += csf/mali_kbase_csf_fw_io.o
+# CONFIG_MALI_CSF_INCLUDE_FW embeds mali_csffw.bin via .incbin with a
+# srctree-relative path; O= builds assemble from the objtree, so give the
+# assembler the srctree as an include search root.
+ccflags-$(CONFIG_MALI_CSF_INCLUDE_FW) += -Wa,-I$(srctree)
 endif
 
 bifrost_kbase-$(CONFIG_DEBUG_FS) += csf/mali_kbase_debug_csf_fault.o
