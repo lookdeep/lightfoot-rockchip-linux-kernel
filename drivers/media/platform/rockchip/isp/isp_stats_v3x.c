@@ -996,7 +996,6 @@ rkisp_stats_send_meas_v3x(struct rkisp_isp_stats_vdev *stats_vdev,
 	if (cur_buf) {
 		cur_stat_buf = cur_buf->vaddr[0];
 		cur_stat_buf->frame_id = cur_frame_id;
-		cur_stat_buf->params_id = params_vdev->cur_frame_id;
 	}
 
 	if (meas_work->isp_ris & ISP3X_AFM_SUM_OF)

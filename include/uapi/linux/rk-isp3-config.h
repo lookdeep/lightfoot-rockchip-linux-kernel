@@ -1071,7 +1071,10 @@ struct isp3x_stat {
 struct rkisp3x_isp_stat_buffer {
 	__u32 meas_type;
 	__u32 frame_id;
-	__u32 params_id;
+	/* params_id removed: inserting it here shifted the 16160-byte stats
+	 * payload from offset 8 to 12 and silently broke every pre-2.9 AIQ
+	 * blob (AE reads 4-byte-shifted grids -> converges dark). KS_T1
+	 * ships frozen AIQ v3.0x8.5; keep the v2.0.0 stat-buffer ABI. */
 	struct isp3x_stat params;
 } __attribute__ ((packed));
 
