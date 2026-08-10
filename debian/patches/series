@@ -41,7 +41,7 @@ debian/firmware_class-refer-to-debian-wiki-firmware-page.patch
 # Change some defaults for security reasons
 debian/af_802154-Disable-auto-loading-as-mitigation-against.patch
 debian/rds-Disable-auto-loading-as-mitigation-against-local.patch
-debian/decnet-Disable-auto-loading-as-mitigation-against-lo.patch
+# dropped (merged upstream by 5.10.252 — DECnet was removed entirely, net/decnet is gone): debian/decnet-Disable-auto-loading-as-mitigation-against-lo.patch
 debian/dccp-disable-auto-loading-as-mitigation-against-local-exploits.patch
 debian/hamradio-disable-auto-loading-as-mitigation-against-local-exploits.patch
 debian/fs-enable-link-security-restrictions-by-default.patch
@@ -67,7 +67,7 @@ debian/btrfs-warn-about-raid5-6-being-experimental-at-mount.patch
 bugfix/arm/arm-dts-kirkwood-fix-sata-pinmux-ing-for-ts419.patch
 bugfix/arm64/dts-rockchip-correct-voltage-selector-firefly-RK3399.patch
 bugfix/x86/perf-tools-fix-unwind-build-on-i386.patch
-bugfix/sh/sh-boot-do-not-use-hyphen-in-exported-variable-name.patch
+# dropped (not applicable to this arm64/rk3588 product, conflicts on 5.10.252): bugfix/sh/sh-boot-do-not-use-hyphen-in-exported-variable-name.patch
 bugfix/arm/arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch
 bugfix/powerpc/powerpc-boot-fix-missing-crc32poly.h-when-building-with-kernel_xz.patch
 bugfix/arm64/arm64-acpi-Add-fixup-for-HPE-m400-quirks.patch
@@ -121,7 +121,7 @@ bugfix/all/libcpupower-hide-private-function.patch
 bugfix/all/cpupower-fix-checks-for-cpu-existence.patch
 bugfix/all/tools-perf-pmu-events-fix-reproducibility.patch
 bugfix/all/bpftool-fix-version-string-in-recursive-builds.patch
-bugfix/all/tools-include-uapi-fix-errno.h.patch
+# dropped (merged upstream by 5.10.252): bugfix/all/tools-include-uapi-fix-errno.h.patch
 
 # ABI maintenance
 

@@ -21,11 +21,11 @@ Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
  security/Kconfig           | 9 +++++++++
  3 files changed, 22 insertions(+)
 
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index c945510..451869d 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1314,6 +1314,11 @@ int perf_cpu_time_max_percent_handler(struct ctl_table *table, int write,
+Index: lightfoot-linux-252-prod/include/linux/perf_event.h
+===================================================================
+--- lightfoot-linux-252-prod.orig/include/linux/perf_event.h
++++ lightfoot-linux-252-prod/include/linux/perf_event.h
+@@ -1333,6 +1333,11 @@ int perf_cpu_time_max_percent_handler(st
  int perf_event_max_stack_handler(struct ctl_table *table, int write,
  		void *buffer, size_t *lenp, loff_t *ppos);
  
@@ -37,10 +37,10 @@ index c945510..451869d 100644
  /* Access to perf_event_open(2) syscall. */
  #define PERF_SECURITY_OPEN		0
  
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 0967992..97f99d3 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
+Index: lightfoot-linux-252-prod/kernel/events/core.c
+===================================================================
+--- lightfoot-linux-252-prod.orig/kernel/events/core.c
++++ lightfoot-linux-252-prod/kernel/events/core.c
 @@ -408,8 +408,13 @@ static cpumask_var_t perf_online_mask;
   *   0 - disallow raw tracepoint access for unpriv
   *   1 - disallow cpu events for unpriv
@@ -55,9 +55,9 @@ index 0967992..97f99d3 100644
  
  /* Minimum for 512 kiB + 1 user control page */
  int sysctl_perf_event_mlock __read_mostly = 512 + (PAGE_SIZE / 1024); /* 'free' kiB per user */
-@@ -11717,6 +11722,9 @@ SYSCALL_DEFINE5(perf_event_open,
- 	if (flags & ~PERF_FLAG_ALL)
- 		return -EINVAL;
+@@ -11849,6 +11854,9 @@ SYSCALL_DEFINE5(perf_event_open,
+ 	if (err)
+ 		return err;
  
 +	if (perf_paranoid_any() && !capable(CAP_SYS_ADMIN))
 +		return -EACCES;
@@ -65,13 +65,13 @@ index 0967992..97f99d3 100644
  	/* Do we allow access to perf_event_open(2) ? */
  	err = security_perf_event_open(&attr, PERF_SECURITY_OPEN);
  	if (err)
-diff --git a/security/Kconfig b/security/Kconfig
-index 0548db16..7c43d96 100644
---- a/security/Kconfig
-+++ b/security/Kconfig
-@@ -19,6 +19,15 @@ config SECURITY_DMESG_RESTRICT
+Index: lightfoot-linux-252-prod/security/Kconfig
+===================================================================
+--- lightfoot-linux-252-prod.orig/security/Kconfig
++++ lightfoot-linux-252-prod/security/Kconfig
+@@ -51,6 +51,15 @@ config PROC_MEM_NO_FORCE
  
- 	  If you are unsure how to answer this question, answer N.
+ endchoice
  
 +config SECURITY_PERF_EVENTS_RESTRICT
 +	bool "Restrict unprivileged use of performance events"

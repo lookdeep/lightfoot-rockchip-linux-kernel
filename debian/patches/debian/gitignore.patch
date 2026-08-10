@@ -9,31 +9,12 @@ Forwarded: not-needed
  .gitignore | 17 +++++++----------
  1 file changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/.gitignore b/.gitignore
-index 763d0b2..385fbb2 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -90,16 +90,6 @@ modules.order
- #
- /tar-install/
- 
--#
--# We don't want to ignore the following even if they are dot-files
--#
--!.clang-format
--!.cocciconfig
--!.get_maintainer.ignore
--!.gitattributes
--!.gitignore
--!.mailmap
--
- #
- # Generated include files
- #
-@@ -160,3 +150,10 @@ x509.genkey
- 
- # Documentation toolchain
- sphinx_*/
+Index: lightfoot-linux-252-prod/.gitignore
+===================================================================
+--- lightfoot-linux-252-prod.orig/.gitignore
++++ lightfoot-linux-252-prod/.gitignore
+@@ -1 +1,8 @@
+ out-c4a-*/
 +
 +#
 +# Debian packaging: ignore everything at the top level, since it isn't

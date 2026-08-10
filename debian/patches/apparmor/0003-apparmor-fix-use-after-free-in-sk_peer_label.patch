@@ -8,11 +8,11 @@ Signed-off-by: John Johansen <john.johansen@canonical.com>
  security/apparmor/lsm.c | 11 +++++++----
  1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index f5e34d3..7163e35 100644
---- a/security/apparmor/lsm.c
-+++ b/security/apparmor/lsm.c
-@@ -1154,9 +1154,10 @@ static struct aa_label *sk_peer_label(struct sock *sk)
+Index: lightfoot-linux-252-prod/security/apparmor/lsm.c
+===================================================================
+--- lightfoot-linux-252-prod.orig/security/apparmor/lsm.c
++++ lightfoot-linux-252-prod/security/apparmor/lsm.c
+@@ -1161,9 +1161,10 @@ static struct aa_label *sk_peer_label(st
  {
  	struct sock *peer_sk;
  	struct aa_sk_ctx *ctx = SK_CTX(sk);
@@ -24,7 +24,7 @@ index f5e34d3..7163e35 100644
  
  	if (sk->sk_family != PF_UNIX)
  		return ERR_PTR(-ENOPROTOOPT);
-@@ -1164,14 +1165,15 @@ static struct aa_label *sk_peer_label(struct sock *sk)
+@@ -1171,14 +1172,15 @@ static struct aa_label *sk_peer_label(st
  	/* check for sockpair peering which does not go through
  	 * security_unix_stream_connect
  	 */
@@ -43,11 +43,11 @@ index f5e34d3..7163e35 100644
  }
  
  /**
-@@ -1215,6 +1217,7 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
- 
- 	}
- 
+@@ -1204,6 +1206,7 @@ static int apparmor_socket_getpeersec_st
+ 	slen = aa_label_asxprint(&name, labels_ns(label), peer,
+ 				 FLAG_SHOW_MODE | FLAG_VIEW_SUBNS |
+ 				 FLAG_HIDDEN_UNCONFINED, GFP_KERNEL);
 +	aa_put_label(peer);
- done:
- 	end_current_label_crit_section(label);
- 
+ 	/* don't include terminating \0 in slen, it breaks some apps */
+ 	if (slen < 0) {
+ 		error = -ENOMEM;
