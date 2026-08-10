@@ -1,0 +1,128 @@
+Source: linux
+Section: kernel
+Priority: optional
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Uploaders: Bastian Blank <waldi@debian.org>, maximilian attems <maks@debian.org>, Ben Hutchings <benh@debian.org>, Salvatore Bonaccorso <carnil@debian.org>
+Standards-Version: 4.2.0
+Build-Depends: debhelper-compat (= 12), dh-exec, python3:any, python-is-python3, quilt, cpio <!stage1>, xz-utils <!stage1>, dh-python <!stage1>, bison <!stage1>, flex (>= 2.6.1-1.1~) <!stage1>
+Build-Depends-Arch: kernel-wedge (>= 2.102~) <!pkg.linux.nokernel !stage1>, kmod <!pkg.linux.nokernel !stage1>, bc <!pkg.linux.nokernel !stage1>, libssl-dev:native <!pkg.linux.nokernel !stage1>, libssl-dev <!pkg.linux.notools !stage1>, openssl (>= 1.1.0-1~) <!pkg.linux.nokernel !stage1>, libelf-dev:native <!pkg.linux.nokernel !stage1>, libelf-dev <!pkg.linux.notools !stage1>, rsync, lz4 [arm64] <!pkg.linux.nokernel !stage1>, pahole <!pkg.linux.nokernel !stage1> | dwarves:native (>= 1.16~) <!pkg.linux.nokernel !stage1>, gcc-11 [arm64] <!cross !pkg.linux.nokernel !stage1>, gcc-11-aarch64-linux-gnu [arm64] <cross !pkg.linux.nokernel !stage1>, gcc-arm-linux-gnueabihf [arm64] <!pkg.linux.nokernel !stage1>, patchutils [arm64] <!pkg.linux.nosource !pkg.linux.quick !stage1>
+Rules-Requires-Root: no
+Homepage: https://www.kernel.org/
+Vcs-Browser: https://salsa.debian.org/kernel-team/linux
+Vcs-Git: https://salsa.debian.org/kernel-team/linux.git
+
+Package: linux-support-5.10.0-0.deb11.2
+Architecture: arm64
+Section: devel
+Build-Profiles: <!stage1>
+Depends: ${python3:Depends}, ${misc:Depends}
+Multi-Arch: foreign
+Description: Support files for Linux 5.10
+ This package provides support files for the Linux kernel build, e.g.
+ scripts to handle ABI information and for generation of build system meta
+ data.
+
+Package: linux-source-5.10
+Architecture: arm64
+Section: kernel
+Build-Profiles: <!pkg.linux.nosource !pkg.linux.quick !stage1>
+Depends: binutils, xz-utils, ${misc:Depends}
+Recommends: build-essential, bc, rsync, kmod, cpio, bison, flex, libelf-dev, libssl-dev, linux-config-5.10
+Suggests: libncurses-dev | ncurses-dev, qtbase5-dev, pkg-config
+Multi-Arch: foreign
+Description: Linux kernel source for version 5.10 with Debian patches
+ This package provides source code for the Linux kernel version 5.10. This
+ source closely tracks official Linux kernel releases.  Debian's
+ modifications to that source consist of security fixes, bug fixes, and
+ features that have already been (or are believed to be) accepted by the
+ upstream maintainers.
+
+Package: linux-source
+Architecture: arm64
+Build-Profiles: <!pkg.linux.nometa !pkg.linux.nosource !pkg.linux.quick !stage1>
+Depends: linux-source-5.10 (= ${binary:Version}), ${misc:Depends}
+Description: Linux kernel source (meta-package)
+ This package depends on packages containing the sources of the latest
+ Linux kernel.
+
+Package: linux-headers-5.10.0-0.deb11.2-common
+Architecture: arm64
+Build-Profiles: <!pkg.linux.nokernel !stage1>
+Depends: ${misc:Depends}
+Multi-Arch: foreign
+Description: Common header files for Linux 5.10.0-0.deb11.2
+ This package provides the common kernel header files for Linux kernel
+ version 5.10.0-0.deb11.2, generally used for building out-of-tree kernel
+ modules.  To obtain a complete set of headers you also need to install the
+ linux-headers-5.10.0-0.deb11.2-(flavour) package, matching the flavour of
+ the kernel you intend the build for.
+
+Package: linux-libc-dev
+Architecture: arm64
+Section: devel
+Depends: ${misc:Depends}
+Multi-Arch: same
+Description: Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These
+ headers are used by the installed headers for GNU libc and other system
+ libraries.
+
+Package: linux-image-5.10.0-0.deb11.2-arm64
+Architecture: arm64
+Build-Profiles: <!pkg.linux.nokernel !pkg.linux.quick !stage1>
+Depends: kmod, linux-base (>= 4.3~), linux-bootwrapper-5.10.0-0.deb11.2 [powerpc ppc64], ${misc:Depends}, initramfs-tools (>= 0.120+deb8u2) [arm64] | linux-initramfs-tool [arm64]
+Recommends: firmware-linux-free, apparmor [arm64]
+Suggests: linux-doc-5.10, debian-kernel-handbook
+Breaks: libmozjs185-1.0 [arm64], libmozjs-24-0 (<< 24.2.0-5.1~) [arm64], fwupdate (<< 12-7) [arm64], wireless-regdb (<< 2019.06.03-1~) [arm64], initramfs-tools (<< 0.120+deb8u2)
+Description: Linux 5.10 for 64-bit ARMv8 machines
+ The Linux kernel 5.10 and modules for use on 64-bit ARMv8 machines.
+
+Package: linux-headers-5.10.0-0.deb11.2-arm64
+Architecture: arm64
+Build-Profiles: <!pkg.linux.nokernel !pkg.linux.quick !stage1>
+Depends: linux-headers-5.10.0-0.deb11.2-common (= ${source:Version}), linux-kbuild-5.10 (>= ${source:Version}), ${misc:Depends}, gcc-11
+Description: Header files for Linux 5.10.0-0.deb11.2-arm64
+ This package provides the architecture-specific kernel header files for
+ Linux kernel 5.10.0-0.deb11.2-arm64, generally used for building
+ out-of-tree kernel modules.  These files are going to be installed into
+ /usr/src/linux-headers-5.10.0-0.deb11.2-arm64, and can be used for
+ building modules that load into the kernel provided by the
+ linux-image-5.10.0-0.deb11.2-arm64 package.
+
+Package: linux-image-arm64
+Architecture: arm64
+Build-Profiles: <!pkg.linux.nokernel !pkg.linux.nometa !pkg.linux.quick !stage1>
+Provides: linux-latest-modules-5.10.0-0.deb11.2-arm64, wireguard-modules (= 1.0.0), linux-image-generic
+Depends: linux-image-5.10.0-0.deb11.2-arm64 (= ${binary:Version}), ${misc:Depends}
+Description: Linux for 64-bit ARMv8 machines (meta-package)
+ This package depends on the latest Linux kernel and modules for use on
+ 64-bit ARMv8 machines.
+
+Package: linux-headers-arm64
+Architecture: arm64
+Build-Profiles: <!pkg.linux.nokernel !pkg.linux.nometa !pkg.linux.quick !stage1>
+Provides: linux-headers-generic
+Depends: linux-headers-5.10.0-0.deb11.2-arm64 (= ${binary:Version}), ${misc:Depends}
+Description: Header files for Linux arm64 configuration (meta-package)
+ This package depends on the architecture-specific header files for the
+ latest Linux kernel arm64 configuration.
+
+Package: linux-image-5.10.0-0.deb11.2-arm64-dbg
+Architecture: arm64
+Section: debug
+Priority: optional
+Build-Profiles: <!pkg.linux.nokernel !pkg.linux.nokerneldbg !pkg.linux.quick !stage1>
+Depends: ${misc:Depends}
+Description: Debug symbols for linux-image-5.10.0-0.deb11.2-arm64
+ This package provides the detached debug symbols for the Linux kernel and
+ modules in linux-image-5.10.0-0.deb11.2-arm64.
+
+Package: linux-image-arm64-dbg
+Architecture: arm64
+Build-Profiles: <!pkg.linux.nokernel !pkg.linux.nokerneldbg !pkg.linux.nometa !pkg.linux.quick !stage1>
+Provides: linux-latest-image-dbg
+Depends: linux-image-5.10.0-0.deb11.2-arm64-dbg (= ${binary:Version}), ${misc:Depends}
+Description: Debugging symbols for Linux arm64 configuration (meta-package)
+ This package depends on the detached debugging symbols for the latest
+ Linux kernel arm64 configuration.
+

@@ -1,0 +1,47 @@
+.NOTPARALLEL:
+binary-arch: binary-arch_arm64
+binary-arch_arm64: binary-arch_arm64_none binary-arch_arm64_real
+binary-arch_arm64_none: binary-arch_arm64_none_arm64 binary-arch_arm64_none_real
+binary-arch_arm64_none_arm64: binary-arch_arm64_none_arm64_real
+binary-arch_arm64_none_arm64_real::
+	$(MAKE) -f debian/rules.real binary-arch-flavour ABINAME='5.10.0-0.deb11.2' ARCH='arm64' COMPILER='gcc-11' CROSS_COMPILE_COMPAT='arm-linux-gnueabihf-' FEATURESET='none' FLAVOUR='arm64' IMAGE_FILE='arch/arm64/boot/Image' IMAGE_INSTALL_STEM='vmlinuz' IMAGE_PACKAGE_NAME='linux-image-5.10.0-0.deb11.2-arm64' KCONFIG='debian/config/config debian/config/arm64/config' KCONFIG_OPTIONS=' -o "BUILD_SALT=\"5.10.0-0.deb11.2-arm64\"" -o "SYSTEM_TRUSTED_KEYS=\"${CURDIR}/debian/certs/debian-uefi-certs.pem\""' KERNEL_ARCH='arm64' LOCALVERSION='-arm64' LOCALVERSION_HEADERS='' LOCALVERSION_IMAGE='-arm64' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VDSO='True' VERSION='5.10'
+binary-arch_arm64_none_real:
+binary-arch_arm64_real:: setup_arm64
+binary-arch_arm64_real::
+	$(MAKE) -f debian/rules.real binary-arch-arch ABINAME='5.10.0-0.deb11.2' ARCH='arm64' KERNEL_ARCH='arm64' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VERSION='5.10'
+binary-indep:: binary-indep_none
+binary-indep::
+	$(MAKE) -f debian/rules.real binary-indep ABINAME='5.10.0-0.deb11.2' ALL_FEATURESETS='none' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VERSION='5.10'
+binary-indep_none: binary-indep_none_real
+binary-indep_none_real::
+	$(MAKE) -f debian/rules.real binary-indep-featureset ABINAME='5.10.0-0.deb11.2' ALL_KERNEL_ARCHES='arm64' FEATURESET='none' LOCALVERSION='' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VERSION='5.10'
+build-arch: build-arch_arm64
+build-arch_arm64: build-arch_arm64_none build-arch_arm64_real
+build-arch_arm64_none: build-arch_arm64_none_arm64 build-arch_arm64_none_real
+build-arch_arm64_none_arm64: build-arch_arm64_none_arm64_real
+build-arch_arm64_none_arm64_real::
+	$(MAKE) -f debian/rules.real build-arch-flavour ABINAME='5.10.0-0.deb11.2' ARCH='arm64' COMPILER='gcc-11' CROSS_COMPILE_COMPAT='arm-linux-gnueabihf-' FEATURESET='none' FLAVOUR='arm64' IMAGE_FILE='arch/arm64/boot/Image' IMAGE_INSTALL_STEM='vmlinuz' IMAGE_PACKAGE_NAME='linux-image-5.10.0-0.deb11.2-arm64' KCONFIG='debian/config/config debian/config/arm64/config' KCONFIG_OPTIONS=' -o "BUILD_SALT=\"5.10.0-0.deb11.2-arm64\"" -o "SYSTEM_TRUSTED_KEYS=\"${CURDIR}/debian/certs/debian-uefi-certs.pem\""' KERNEL_ARCH='arm64' LOCALVERSION='-arm64' LOCALVERSION_HEADERS='' LOCALVERSION_IMAGE='-arm64' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VDSO='True' VERSION='5.10'
+build-arch_arm64_none_real:
+build-arch_arm64_real::
+	$(MAKE) -f debian/rules.real build-arch-arch ABINAME='5.10.0-0.deb11.2' ARCH='arm64' KERNEL_ARCH='arm64' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VERSION='5.10'
+build-indep:: build-indep_none
+build-indep::
+	$(MAKE) -f debian/rules.real build-indep ABINAME='5.10.0-0.deb11.2' ALL_FEATURESETS='none' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VERSION='5.10'
+build-indep_none: build-indep_none_real
+build-indep_none_real:
+debian/build/config.arm64_none_arm64::
+	$(MAKE) -f debian/rules.real debian/build/config.arm64_none_arm64 ABINAME='5.10.0-0.deb11.2' ARCH='arm64' COMPILER='gcc-11' CROSS_COMPILE_COMPAT='arm-linux-gnueabihf-' FEATURESET='none' FLAVOUR='arm64' IMAGE_FILE='arch/arm64/boot/Image' IMAGE_INSTALL_STEM='vmlinuz' IMAGE_PACKAGE_NAME='linux-image-5.10.0-0.deb11.2-arm64' KCONFIG='debian/config/config debian/config/arm64/config' KCONFIG_OPTIONS=' -o "BUILD_SALT=\"5.10.0-0.deb11.2-arm64\"" -o "SYSTEM_TRUSTED_KEYS=\"${CURDIR}/debian/certs/debian-uefi-certs.pem\""' KERNEL_ARCH='arm64' LOCALVERSION='-arm64' LOCALVERSION_HEADERS='' LOCALVERSION_IMAGE='-arm64' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VDSO='True' VERSION='5.10'
+setup: setup_arm64 setup_none
+setup_arm64: setup_arm64_none setup_arm64_real
+setup_arm64_none: setup_arm64_none_arm64 setup_arm64_none_real
+setup_arm64_none_arm64: setup_arm64_none_arm64_real
+setup_arm64_none_arm64_real::
+	$(MAKE) -f debian/rules.real setup-arch-flavour ABINAME='5.10.0-0.deb11.2' ARCH='arm64' COMPILER='gcc-11' CROSS_COMPILE_COMPAT='arm-linux-gnueabihf-' FEATURESET='none' FLAVOUR='arm64' IMAGE_FILE='arch/arm64/boot/Image' IMAGE_INSTALL_STEM='vmlinuz' IMAGE_PACKAGE_NAME='linux-image-5.10.0-0.deb11.2-arm64' KCONFIG='debian/config/config debian/config/arm64/config' KCONFIG_OPTIONS=' -o "BUILD_SALT=\"5.10.0-0.deb11.2-arm64\"" -o "SYSTEM_TRUSTED_KEYS=\"${CURDIR}/debian/certs/debian-uefi-certs.pem\""' KERNEL_ARCH='arm64' LOCALVERSION='-arm64' LOCALVERSION_HEADERS='' LOCALVERSION_IMAGE='-arm64' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VDSO='True' VERSION='5.10'
+setup_arm64_none_real:
+setup_arm64_real:
+setup_none: setup_none_real
+setup_none_real:
+source: source_none
+source_none: source_none_real
+source_none_real::
+	$(MAKE) -f debian/rules.real source-featureset ABINAME='5.10.0-0.deb11.2' FEATURESET='none' SOURCEVERSION='5.10.110-14' SOURCE_BASENAME='linux' SOURCE_SUFFIX='' UPSTREAMVERSION='5.10' VERSION='5.10'

@@ -1,0 +1,25 @@
+From: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Date: Sat, 21 Jan 2023 19:55:25 -0500
+Subject: [sh4] Fix uImage build
+
+Bug-Debian: https://bugs.debian.org/569034
+Forwarded: not-needed
+
+[bwh: This was added without a description, but I think it is done
+ only to avoid a build-dependency on u-boot-tools.]
+---
+ arch/sh/Makefile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/sh/Makefile b/arch/sh/Makefile
+index 2faebfd..57df39c 100644
+--- a/arch/sh/Makefile
++++ b/arch/sh/Makefile
+@@ -81,7 +81,6 @@ OBJCOPYFLAGS	:= -O binary -R .note -R .note.gnu.build-id -R .comment \
+ 
+ # Give the various platforms the opportunity to set default image types
+ defaultimage-y					:= zImage
+-defaultimage-$(CONFIG_SH_SH7785LCR)		:= uImage
+ defaultimage-$(CONFIG_SH_RSK)			:= uImage
+ defaultimage-$(CONFIG_SH_URQUELL)		:= uImage
+ defaultimage-$(CONFIG_SH_MIGOR)			:= uImage

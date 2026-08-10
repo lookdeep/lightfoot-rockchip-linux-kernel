@@ -1,0 +1,17 @@
+linux (5.10.252-1) UNRELEASED; urgency=medium
+
+  * Rebase onto rockchip develop-5.10 @ 5.10.252 (tip bfa51d2ab): ~140
+    sublevels of upstream stable security fixes merged by Rockchip, rknpu
+    driver 0.8.2 -> 0.9.8 (librknnrt 2.3.0-compatible, documented range).
+  * KS_T1 board support now committed in-tree (formerly quilt patches
+    lookdeep/0001-0008, hand-adapted; plus drivers/switch re-import,
+    removed in-branch upstream).
+  * rkisp v3x: restore the v2.0.0 stat-buffer ABI (a params_id field
+    inserted in-branch shifted the 3A stats payload and silently broke
+    the frozen AIQ v3.0x8.5 blob - AE converged ~4.5x dark). Camera
+    verified at pixel parity with 5.10.110-16 on lvu-0299 (night+day).
+  * Config: fleet 5.10.110-17 config migrated (new-symbol answers from
+    the hardware-validated bench build; incl. new ARM64 errata =y).
+
+ -- James Eitzmann <james@lookdeep.health>  Sun, 10 Aug 2026 12:00:00 -0400
+

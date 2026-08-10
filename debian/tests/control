@@ -1,0 +1,14 @@
+Tests: python
+Restrictions: superficial
+Depends: python3
+
+Tests: selftests
+Restrictions: breaks-testbed, needs-root, isolation-machine
+Depends: kexec-tools, python3, gcc, make, libpopt-dev, gcc-multilib [amd64], bc, fuse, libfuse-dev, pkg-config, linux-image-5.10.0-0.deb11.2-arm64 [arm64]
+Classes: smp
+
+Tests: kbuild
+Architecture: arm64
+Restrictions: superficial
+Depends: python3, linux-headers-5.10.0-0.deb11.2-arm64 [arm64]
+

@@ -1,0 +1,97 @@
+include:
+  - project: 'infrastructure/ci-package-builder'
+    file: '/ci-package-builder.yml'
+
+variables:
+  DOWNSTREAM_RELEASES_5_15: apertis/v2022
+
+# Pull the latest upstream linux kernel
+upstream-kernel-pull:
+  stage: update
+  resource_group: $CI_PROJECT_ID
+  tags:
+    - lightweight
+  variables:
+    # needed to ensure the current branch has been refreshed, as the previous job may have update it
+    # by importing updates and we do not want to try to merge an outdated commit
+    # (see also how we pass the ci.skip options to not re-kick this pipeline when importing updates)
+    GIT_STRATEGY: clone
+    GIT_DEPTH: 1
+    REBASE_RANGE: '' # overridden externally when mirroring new downstream branches, e.g. apertis/v2021..downstream/v2021
+  dependencies:
+    - prepare-build-env
+  rules:
+    # Match on all apertis/vXXXX-security branches
+    - if: $CI_COMMIT_BRANCH =~ /^apertis\/v.*-security$/
+      when: manual
+  script:
+    # Use the identity of the person that started the pipeline
+    - git config user.email "${GITLAB_USER_EMAIL}"
+    - git config user.name "${GITLAB_USER_NAME}"
+    - export DEBEMAIL="${GITLAB_USER_EMAIL}"
+    - git checkout "${CI_COMMIT_BRANCH}"
+    - apertis-pull-upstream-kernel ./
+
+# Try to rebase on the upstream kernel and create merge requests on success.
+upstream-kernel-rebase:
+  stage: merge
+  resource_group: $CI_PROJECT_ID
+  tags:
+    - lightweight
+  variables:
+    # needed to ensure the current branch has been refreshed, as the previous job may have update it
+    # by importing updates and we do not want to try to merge an outdated commit
+    # (see also how we pass the ci.skip options to not re-kick this pipeline when importing updates)
+    GIT_STRATEGY: clone
+    GIT_DEPTH: 1
+    REBASE_RANGE: '' # overridden externally when mirroring new downstream branches, e.g. apertis/v2021..downstream/v2021
+  dependencies:
+    - prepare-build-env
+  rules:
+    # Match on all upstream/linux-* branches
+    - if: $CI_COMMIT_BRANCH =~ /^upstream\/linux-.*\.y$/
+  script:
+    # Use the identity of the person that started the pipeline
+    - git config user.email "${GITLAB_USER_EMAIL}"
+    - git config user.name "${GITLAB_USER_NAME}"
+    - export DEBEMAIL="${GITLAB_USER_EMAIL}"
+    # Derive the apertis version to rebase on this upstream
+    - set -x
+    - UPSTREAM_RELEASE=$(echo $CI_COMMIT_BRANCH | sed 's#^upstream/linux-\([0-9]\+\.[0-9]\+\)\.y$#\1#')
+    - VAR_SUFFIX=$(echo $UPSTREAM_RELEASE | sed 's/\./_/g')
+    - DOWNSTREAM_RELEASES_VAR=DOWNSTREAM_RELEASES_${VAR_SUFFIX} # look for variables like "$DOWNSTREAM_RELEASES_5_15"
+    - DOWNSTREAM_RELEASE=${!DOWNSTREAM_RELEASES_VAR} # expand variables for "$DOWNSTREAM_RELEASES_5_15"
+    - set +x
+    # Run the rebase script
+    - '[ -z "${DOWNSTREAM_RELEASE}" ] && echo "Cannot find downstream release" && exit 1'
+    - git fetch --depth=1 --tags origin "${DOWNSTREAM_RELEASE}-security"
+    - git checkout "${DOWNSTREAM_RELEASE}-security"
+    - apertis-rebase-upstream-kernel ./ && apertis-push-upstream-kernel ./
+
+# Push branches and create merge requests on a new rebase on the latest upstream kernel
+upstream-kernel-push:
+  stage: merge
+  resource_group: $CI_PROJECT_ID
+  tags:
+    - lightweight
+  variables:
+    # needed to ensure the current branch has been refreshed, as the previous job may have update it
+    # by importing updates and we do not want to try to merge an outdated commit
+    # (see also how we pass the ci.skip options to not re-kick this pipeline when importing updates)
+    GIT_STRATEGY: clone
+    GIT_DEPTH: 1
+    REBASE_RANGE: '' # overridden externally when mirroring new downstream branches, e.g. apertis/v2021..downstream/v2021
+  dependencies:
+    - prepare-build-env
+  rules:
+    # Match on all rebased-update\/upstream\/v.*-security\/.*-kernel-update branches
+    - if: $CI_COMMIT_BRANCH =~ /^rebased-update\/upstream\/v.*-security\/.*-kernel-update$/
+      when: manual
+  script:
+    # Use the identity of the person that started the pipeline
+    - git config user.email "${GITLAB_USER_EMAIL}"
+    - git config user.name "${GITLAB_USER_NAME}"
+    - export DEBEMAIL="${GITLAB_USER_EMAIL}"
+    - git checkout "${CI_COMMIT_BRANCH}"
+    - apertis-push-upstream-kernel ./
+
