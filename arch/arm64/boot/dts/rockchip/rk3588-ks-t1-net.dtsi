@@ -58,3 +58,13 @@
 		rockchip,pins = <1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>;
 	};
 };
+/* GPIO3_B7 is gmac1's PHY reset line (snps,reset-gpio above). The EVB
+ * work_led inherited from rk3588-evb.dtsi claims the same pin; since
+ * 5.10.252 stmmac releases the reset GPIO after its probe-time pulse
+ * (stmmac_mdio_reset devm_gpiod_put), so leds-gpio wins the pin and
+ * holds the RTL8211F in hardware reset -> "Failed to reset the dma"
+ * on every open. KS_T1 has no work LED fitted; disable the node.
+ */
+&leds {
+	status = "disabled";
+};
