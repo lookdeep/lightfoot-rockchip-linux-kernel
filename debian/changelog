@@ -1,3 +1,19 @@
+linux (5.10.252-3) UNRELEASED; urgency=medium
+
+  * rk-camera-module: restore the 5.10.110 struct rkmodule_inf ABI. Rockchip
+    inserted pd_offset into struct rkmodule_pdaf_inf, growing rkmodule_inf
+    5203 -> 5207 bytes; that size is encoded in the RKMODULE_GET_MODULE_INFO
+    ioctl number, so the frozen closed AIQ v3.0x8.5 got -ENOTTY on the call
+    that fetches the module/lens names. selectIqFile() then failed, no IQ file
+    was loaded, 3A never started and both IMX415 sensors sat at driver
+    defaults (max exposure, zero gain) - a dark image with no errors logged
+    beyond a single iqfiles line. Root-caused on bench hardware (lvu-0299):
+    the 5203-sized ioctl returns ENOTTY while 5207 succeeds, and librkaiq.so
+    encodes the 5203 form. Drops the field, drops its five sensor-driver
+    assignments, and adds a BUILD_BUG_ON so this cannot silently drift again.
+
+ -- James Eitzmann <james@lookdeep.health>  Mon, 17 Aug 2026 11:33:04 -0400
+
 linux (5.10.252-2) UNRELEASED; urgency=medium
 
   * rk3588-ks-t1: disable inherited EVB work_led node - it drives GPIO3_B7,
