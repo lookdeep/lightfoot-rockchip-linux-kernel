@@ -414,7 +414,14 @@ struct rkmodule_pdaf_inf {
 	__u32 dccmap_height;
 	__u32 dcc_mode;
 	__u32 dcc_dir;
-	__u32 pd_offset;
+	/* pd_offset intentionally NOT carried here: inserting a field into
+	 * rkmodule_pdaf_inf grows sizeof(struct rkmodule_inf) 5203 -> 5207,
+	 * and that size is encoded in the RKMODULE_GET_MODULE_INFO ioctl
+	 * number. Every pre-2.9 AIQ blob then gets -ENOTTY on the call that
+	 * fetches module/lens names, so selectIqFile() fails, no IQ file is
+	 * loaded, 3A never starts and the sensor sits at driver defaults
+	 * (max exposure, zero gain) -> dark image. KS_T1 ships frozen AIQ
+	 * v3.0x8.5; keep the 5.10.110 rkmodule_inf ABI. */
 	__u16 gainmap[RKMODULE_PADF_GAINMAP_LEN];
 	__u16 dccmap[RKMODULE_PDAF_DCCMAP_LEN];
 } __attribute__ ((packed));

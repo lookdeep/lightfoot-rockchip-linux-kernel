@@ -1725,6 +1725,13 @@ static int imx415_g_mbus_config(struct v4l2_subdev *sd, unsigned int pad_id,
 static void imx415_get_module_inf(struct imx415 *imx415,
 				  struct rkmodule_inf *inf)
 {
+	/* The KS_T1 camera stack drives a frozen closed AIQ blob that encodes
+	 * sizeof(struct rkmodule_inf) in the RKMODULE_GET_MODULE_INFO ioctl
+	 * number. Growing this struct silently ENOTTYs that ioctl and kills 3A
+	 * (dark image, zero errors anywhere). Fail the build instead.
+	 */
+	BUILD_BUG_ON(sizeof(struct rkmodule_inf) != 5203);
+
 	memset(inf, 0, sizeof(*inf));
 	strlcpy(inf->base.sensor, IMX415_NAME, sizeof(inf->base.sensor));
 	strlcpy(inf->base.module, imx415->module_name,
