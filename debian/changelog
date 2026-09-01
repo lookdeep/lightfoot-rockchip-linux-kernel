@@ -1,3 +1,14 @@
+linux (5.10.252-4) UNRELEASED; urgency=medium
+
+  * config: enable CONFIG_NET_SCHED on arm64 - drop the override mask so the
+    common config's scheduler block applies (qdisc modules incl. sch_netem,
+    tbf, htb) for on-device network-emulation testing (tc/tcset). Default
+    qdisc stays pfifo_fast: CONFIG_NET_SCH_DEFAULT is unset in the override,
+    since the common CONFIG_DEFAULT_FQ_CODEL=y would otherwise flip every
+    fleet interface to fq_codel. No runtime behavior change until tc is used.
+
+ -- James Eitzmann <james@lookdeep.health>  Tue, 01 Sep 2026 11:54:37 -0400
+
 linux (5.10.252-3) UNRELEASED; urgency=medium
 
   * rk-camera-module: restore the 5.10.110 struct rkmodule_inf ABI. Rockchip
