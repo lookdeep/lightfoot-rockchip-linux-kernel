@@ -1,3 +1,15 @@
+linux (5.10.252-5) UNRELEASED; urgency=medium
+
+  * net: backport two upstream linux-5.10.y TCP fixes, no config change:
+    - CVE-2026-98432: ipv4: free inet_opt and ireq_opt after an RCU grace
+      period (5.10.y b3b027ef0cd3, upstream e3f33b0a1d89, in 5.10.272).
+      inet_sock_destruct() and tcp_v4_reqsk_destructor() freed the IPv4
+      options with kfree() while a SYN-ACK could still read them under RCU.
+    - CVE-2026-43198: tcp: fix potential race in tcp_v6_syn_recv_sock()
+      (5.10.y aef4a9ae95d1, upstream 858d2a4f67ff, in 5.10.270).
+
+ -- James Eitzmann <james@lookdeep.health>  Mon, 09 Nov 2026 15:38:17 -0500
+
 linux (5.10.252-4) UNRELEASED; urgency=medium
 
   * config: enable CONFIG_NET_SCHED on arm64 - drop the override mask so the
